@@ -1,0 +1,344 @@
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+# MB5370: Techniques in Marine Science 1
+
+# Module 1 - Workshop 04. The Developer's Toolbox & AI
+
+## Step 1: Prepare Your Workspace
+
+Load needed packages
+```{r}
+library(tidyverse)
+library(palmerpenguins)
+```
+
+## Step 2: Prompt for a Multi-Variable Scatter Plot
+
+#### Create a ggplot scatter plot using the penguins dataset. Plot bill_length_mm on the x-axis and bill_depth_mm on the y-axis. Color points by species and use geom_point with size 3. Add a minimal theme and clean labels.
+
+Filter out rows with missing values for the plotted variables
+```{r}
+penguins_clean <- subset(penguins,
+                         !is.na(bill_length_mm) &
+                         !is.na(bill_depth_mm) &
+                         !is.na(species))
+```
+
+Plot data
+```{r}
+ggplot(penguins_clean, aes(x = bill_length_mm, y = bill_depth_mm, color = species)) +
+  geom_point(size = 3, alpha = 0.85) +
+  theme_minimal() +
+  labs(
+    title = "Penguin bill dimensions",
+    x = "Bill length (mm)",
+    y = "Bill depth (mm)",
+    color = "Species",
+    caption = "Data: palmerpenguins::penguins"
+  ) +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.position = "right"
+  )
+```
+
+## Step 3: Open-Ended Comparative Plotting
+
+#### Option A (Distribution Check): Instruct Copilot to generate a boxplot comparing flipper_length_mm across different species, faceted by island, using custom color palettes.
+
+Filter out rows with missing values for the plotted variables
+```{r}
+penguins_clean <- subset(penguins,
+                         !is.na(flipper_length_mm) &
+                         !is.na(species) &
+                         !is.na(island))
+```
+
+Define a custom palette (map species names to specific colors)
+```{r}
+species_colors <- c(
+  "Adelie"    = "#1f78b4",  # blue
+  "Chinstrap" = "#33a02c",  # green
+  "Gentoo"    = "#e31a1c"   # red
+)
+```
+
+Create the boxplot: flipper_length_mm by species, faceted by island
+```{r}
+ggplot(penguins_clean, aes(x = species, y = flipper_length_mm, fill = species)) +
+  geom_boxplot(outlier.shape = 21, outlier.fill = "white", alpha = 0.95) +
+  scale_fill_manual(values = species_colors) +
+  facet_wrap(~ island) +
+  theme_minimal() +
+  labs(
+    title = "Flipper length by species, faceted by island",
+    x = "Species",
+    y = "Flipper length (mm)",
+    fill = "Species",
+    caption = "Data: palmerpenguins::penguins"
+  ) +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    axis.text.x = element_text(angle = 25, hjust = 1),
+    legend.position = "none"
+  )
+```
+
+#### Option B (Biomass Correlation): Instruct Copilot to build a scatter plot mapping body_mass_g against flipper_length_mm, adding a linear regression trend line (geom_smooth) for each species.
+
+Filter out rows with missing values for the plotted variables
+```{r}
+penguins_clean <- subset(penguins,
+                         !is.na(flipper_length_mm) &
+                         !is.na(body_mass_g) &
+                         !is.na(species))
+```
+
+Define a custom palette
+```{r}
+species_colors <- c(
+  "Adelie"    = "#1f78b4",
+  "Chinstrap" = "#33a02c",
+  "Gentoo"    = "#e31a1c"
+)
+```
+
+Scatter plot: flipper_length_mm (x) vs body_mass_g (y), points colored by species
+Add a linear regression trend line (geom_smooth) for each species
+```{r}
+ggplot(penguins_clean, aes(x = flipper_length_mm, y = body_mass_g, color = species)) +
+  geom_point(size = 3, alpha = 0.85) +
+  geom_smooth(aes(fill = species), method = "lm", formula = y ~ x, se = TRUE, alpha = 0.2) +
+  scale_color_manual(values = species_colors) +
+  scale_fill_manual(values = species_colors) +
+  theme_minimal() +
+  labs(
+    title = "Body mass vs flipper length, by species",
+    x = "Flipper length (mm)",
+    y = "Body mass (g)",
+    color = "Species",
+    fill = "Species",
+    caption = "Data: palmerpenguins::penguins"
+  ) +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.position = "right"
+  )
+```
+
+# chattr (Conversational Workspace Engine)
+
+Load needed packages
+```{r}
+# install.packages("ellmer")
+```
+
+```{r}
+# install.packages("chattr")
+```
+
+```{r}
+# usethis::edit_r_environ()
+```
+
+```{r}
+# usethis::edit_r_profile()
+```
+
+```{r}
+# options(.chattr_chat = ellmer::chat_google_gemini())
+```
+Simple Example: Checking Sea Surface Temperature (SST)
+```{r}
+sst <- 30.2
+
+if (sst > 29.5) {
+  print("Warning: Marine heatwave threshold exceeded!")
+} else {
+  print("SST remains within baseline parameters.")
+}
+```
+
+Sample coral data
+```{r}
+coral_monitoring <- tibble(
+  site = c("Site_A", "Site_B", "Site_C"),
+  depth_m = c(12, 35, 8)
+)
+```
+
+Classify depth using if_else
+```{r}
+coral_monitoring <- coral_monitoring %>% 
+  mutate(zone = if_else(depth_m > 30, "Deep Reef", "Shallow Reef"))
+```
+
+```{r}
+coral_monitoring <- coral_monitoring %>% 
+  mutate(reef_category = case_when(
+    depth_m < 10  ~ "Lagoon / Flats",
+    depth_m <= 30 ~ "Crest / Slope",
+    depth_m > 30  ~ "Mesophotic / Deep",
+    TRUE          ~ "Unclassified" # Catch-all remainder
+  ))
+```
+
+## Environmental Stress Classification Task
+
+Initialize the tibble
+```{r}
+marine_stations <- tibble(
+  salinity = c(35, 28, 32, 12)
+)
+```
+
+Add environment_type using pipe + mutate + case_when
+```{r}
+marine_stations <- marine_stations %>%
+  mutate(
+    environment_type = case_when(
+      salinity < 15 ~ "Estuarine",
+      salinity >= 15 & salinity <= 30 ~ "Brackish",
+      salinity > 30 ~ "Marine"
+    )
+  )
+```
+
+Verify structure
+```{r}
+print(marine_stations)
+str(marine_stations)
+```
+
+## Automation — Iterating Efficiently
+#### Base R: for-loops
+A for-loop repeats a code chunk for each element in a designated sequence.
+
+Classic loop anatomy
+```{r}
+for (year in 2020:2024) {
+  print(paste("Processing climate data for year:", year))
+}
+```
+
+Loop across index sequences
+```{r}
+transect_lengths <- c(50, 100, 25, 75)
+
+for (i in seq_along(transect_lengths)) {
+  print(paste("Transect number", i, "measures", transect_lengths[i], "metres."))
+}
+```
+
+#### Using a standard for-loop
+```{r}
+site_areas <- c(144, 400, 625)
+results <- numeric(length(site_areas)) # Must build an empty container first
+
+for(i in seq_along(site_areas)) {
+  results[i] <- sqrt(site_areas[i])
+  }
+```
+
+#### Using the purrr equivalent
+```{r}
+library(purrr)
+```
+
+Map directly and define your expected output type explicitly
+```{r}
+mapped_results <- map_dbl(site_areas, sqrt)
+```
+
+Iterate a summary function over split lists of data
+```{r}
+iris %>% 
+  split(.$Species) %>% 
+  map(~summary(.x))
+```
+#### Task using chattr
+
+For-loop
+```{r}
+fish_counts <- list(
+  lake_a = c(12, 15, 9, 20, 14),
+  lake_b = c(8, 11, 7, 10),
+  lake_c = c(25, 30, 22, 28, 26, 24)
+)
+
+means <- vector("double", length(fish_counts))
+names(means) <- names(fish_counts)
+
+for (i in seq_along(fish_counts)) {
+  means[i] <- mean(fish_counts[[i]])
+}
+
+means
+```
+
+Parallel purrr::map_dbl version
+```{r}
+library(purrr)
+
+means <- map_dbl(fish_counts, mean)
+
+means
+```
+
+## Writing custom functions
+#### Function Construction Blueprint
+
+Function Definition
+```{r}
+  
+calculate_coral_mortality <- function(initial_count, surviving_count) {
+  
+  if (initial_count <= 0) {
+    stop("Initial count must be greater than zero.")
+  }
+  
+  mortality_rate <- (initial_count - surviving_count) / initial_count
+  return(mortality_rate)
+}
+```
+
+Utilizing your custom function
+```{r}
+calculate_coral_mortality(initial_count = 120, surviving_count = 84)
+```
+
+##  Custom Function Construction Task
+
+```{r}
+convert_temp_c_to_f <- function(celsius) {
+  if (celsius < -273.15) {
+    stop("Temperature below absolute zero is not physically possible.")
+  }
+  
+  fahrenheit <- (celsius * 9/5) + 32
+  return(fahrenheit)
+}
+```
+
+Test 1: Valid temperature
+```{r}
+convert_temp_c_to_f(25)
+#> [1] 77
+```
+
+Test 2: Another valid temperature (freezing point of water)
+```{r}
+convert_temp_c_to_f(0)
+#> [1] 32
+```
+
+Test 3: Invalid temperature (below absolute zero) — should throw an error
+```{r}
+# convert_temp_c_to_f(-300)
+#> Error in convert_temp_c_to_f(-300) : 
+#>   Temperature below absolute zero is not physically possible.
+```
+
