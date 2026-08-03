@@ -1,4 +1,4 @@
-# MB5370-Module-1-Workshop-4
+# MB5370 Module 1 Workshop 4
 
 Workshop 4: The developer’s toolbox and AI focuses on integrating AI assisted coding tools with core programming concepts to build efficient automated analytical workflows. Using the palmer penguins dataset, the workshop introduced github copilot to generate a multi-variable scatter plot of bill length against bill depth that was coloured by species. Other graphs that were created was a boxplot of flipper length by species faceted by island, and a scatter plot of body mass against flipper length that had linear regression trend lines fitted for each specie. Both of these graphs used custom colour palettes and labelled visualisations.
 
